@@ -1,6 +1,5 @@
 #include "Cell.h"
 #include <stdexcept>
-#include <iostream>
 
 Cell::Cell(size_t x, size_t y, char shape)
 : x(x), y(y), shape(shape)

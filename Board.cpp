@@ -5,6 +5,9 @@
 CellBoard::CellBoard(size_t height, size_t width)
 : height(height), width(width), nGen(0)
 {
+    if (0 == height || 0 == width)
+        throw std::invalid_argument("Unable to construct board with a size of zero.");
+
     for (unsigned i = 0; i < width; i++) { // Allocating columns while abiding by ownership.
         std::vector<std::unique_ptr<Cell>> col;
         for (unsigned j = 0; j < height; j++) {
@@ -75,35 +78,29 @@ std::pair<int, int> CellBoard::getSize() const {
 }
 
 CellBox CellBoard::getCellArea(const Cell & in) const {
-    if (in.getX() < width && in.getY() < height) { // Base case with the cell being in the board and not on and edge.
-        return {height, width,
-                height, width};
+    if (in.getY() >= height || in.getX() >= width) {
+        throw std::out_of_range("Out of bounds.");
     } else
-        if (in.getX() == width && in.getY() == height) { // Cell being on the bottom right corner.
-            return {height - 1, width - 1,
-                    height, width};
+        if ((in.getY() > 0 && in.getY() < height - 1) && (in.getX() > 0 && in.getX() < width - 1)) {
+            return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX() + 1);
     } else
-        if (in.getX() == width) { // Cell being on the right edge.
-            return {height - 1, width - 1,
-                    height, width + 1};
+        if (in.getY() == height - 1 && in.getX() == width - 1) {
+            return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX());
     } else
-        if (in.getY() == height) { // Cell being on the bottom edge.
-            return {height - 1, width - 1,
-                    height + 1, width};
+        if (in.getX() == width - 1) {
+            return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX());
     } else
-        if (in.getX() == 0 && in.getY() == 0) { // Cell being on the top left corner.
-            return {height, width,
-                    height + 1, width + 1};
+        if (in.getY() == height - 1) {
+            return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX() + 1);
     } else
-        if (in.getX() == 0) { // Cell being on the left edge.
-            return {height - 1, width,
-                    height + 1, width + 1};
+        if (in.getX() == 0) {
+            return CellBox(in.getY() - 1, in.getX(), in.getY() + 1, in.getX() + 1);
     } else
-        if (in.getY() == 0) { // Cell being on the top edge.
-            return {height, width - 1,
-                    height + 1, width + 1};
-    } else // Cell being outside of the board area.
-        throw std::runtime_error("Invalid cell coordinates.");
+        if (in.getY() == 0) {
+            return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX() + 1);
+    } else
+        return CellBox(in.getY(), in.getX(), in.getY() + 1, in.getX() + 1);
+
 }
 
 char CellBoard::getCellShape(size_t y, size_t x) const {
