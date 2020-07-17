@@ -1,7 +1,3 @@
-//
-// Created by avery on 16.07.20 г..
-//
-
 #ifndef GREEN_VS_RED_CELL_H
 #define GREEN_VS_RED_CELL_H
 
@@ -9,9 +5,9 @@
 #include <memory>
 
 enum CELL_CHARS {
-    NONE = '\0',
-    RED = '0',
-    GREEN = '1'
+    NONE    = '\0',
+    RED     = '0',
+    GREEN   = '1'
 };
 
 struct CellBoard;
@@ -27,8 +23,8 @@ public:
     char getShape() const;
 
 private:
-    size_t x, y;
-    char shape;
+    size_t  x, y;
+    char    shape;
 };
 
 class Red_Cell : public Cell {
@@ -53,12 +49,17 @@ struct CellBox {
     
 };
 
-struct CellBoard {
+class CellBoard {
+public:
     CellBoard(size_t sizeX, size_t sizeY);
 
     void print();
     void clear();
     void update();
+
+    size_t  getGens() const;
+    char    getCellShape(size_t y, size_t x) const;
+    CellBox getCellArea(const Cell & in) const;
 
     template<class T>
     void fillEmpty() {
@@ -77,14 +78,11 @@ struct CellBoard {
 
     std::pair<int,int> getSize();
 
-    CellBox cellArea(const Cell & in) const;
-
-    char getCellShape(size_t y, size_t x) const;
-
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> board;
     size_t height;
     size_t width;
+    size_t nGen;
 };
 
 #endif //GREEN_VS_RED_CELL_H

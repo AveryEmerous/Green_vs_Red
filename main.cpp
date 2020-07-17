@@ -30,7 +30,7 @@ int main() {
     unsigned cnt = 0;
 
     for (unsigned i = 0; i < 10; i++) {
-        if (board.getCellShape(0,1) == GREEN) {
+        if (board.getCellShape(1,0) == GREEN) {
             cnt++;
         }
 

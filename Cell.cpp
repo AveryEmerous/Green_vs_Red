@@ -1,7 +1,3 @@
-//
-// Created by avery on 16.07.20 г..
-//
-
 #include "Cell.h"
 #include <stdexcept>
 #include <iostream>
@@ -23,17 +19,18 @@ char Cell::getShape() const {
     return shape;
 }
 
-
 Red_Cell::Red_Cell(size_t x, size_t y)
 : Cell(x, y, RED)
 {
 }
 
 char Red_Cell::nextGen(CellBoard &in) {
-    CellBox currBox = in.cellArea(*this);
+    CellBox currBox = in.getCellArea(*this);
     unsigned greenCnt = 0;
-    for (unsigned i = 0; i < 3; i++) {
-        for (unsigned j = 0; j < 3; j++) {
+    for (unsigned i = currBox.upper.first; i < currBox.lower.first; i++) {
+        for (unsigned j = currBox.upper.second; j < currBox.lower.second; j++) {
+            if (i == getX() && j == getY())
+                continue;
             if (in.getCellShape(i,j) == GREEN) {
                 greenCnt++;
             }
@@ -49,10 +46,12 @@ Green_Cell::Green_Cell(size_t x, size_t y)
 }
 
 char Green_Cell::nextGen(CellBoard &in) {
-    CellBox currBox = in.cellArea(*this);
+    CellBox currBox = in.getCellArea(*this);
     unsigned redCnt = 0;
-    for (unsigned i = 0; i < 3; i++) {
-        for (unsigned j = 0; j < 3; j++) {
+    for (unsigned i = currBox.upper.first; i < currBox.lower.first; i++) {
+        for (unsigned j = currBox.upper.second; j < currBox.lower.second; j++) {
+            if (i == getX() && j == getY())
+                continue;
             if (in.getCellShape(i,j) == GREEN) {
                 redCnt++;
             }
@@ -60,10 +59,7 @@ char Green_Cell::nextGen(CellBoard &in) {
     }
 
     switch (redCnt) {
-        case 2:
-            return NONE;
-
-        case 3: case 6:
+        case 2: case 3: case 6:
             return NONE;
 
         default:
@@ -72,7 +68,7 @@ char Green_Cell::nextGen(CellBoard &in) {
 }
 
 CellBoard::CellBoard(size_t sizeX, size_t sizeY)
-: width(sizeX), height(sizeY)
+: width(sizeX), height(sizeY), nGen(0)
 {
     for (unsigned i = 0; i < width; i++) {
         std::vector<std::unique_ptr<Cell>> col;
@@ -105,6 +101,7 @@ void CellBoard::clear() {
 }
 
 void CellBoard::update() {
+    nGen++;
     char shape = '\0';
     for (size_t h = 0; h < height; h++) {
         for (size_t w = 0; w < width; w++) {
@@ -130,6 +127,10 @@ void CellBoard::update() {
     }
 }
 
+size_t CellBoard::getGens() const {
+    return nGen;
+}
+
 void CellBoard::addCell(std::unique_ptr<Cell> in) {
     if (!in) return;
     if ((in->getY() < height || in->getX() < width) && !board[in->getY()][in->getX()])
@@ -140,7 +141,7 @@ std::pair<int, int> CellBoard::getSize() {
     return {height, width};
 }
 
-CellBox CellBoard::cellArea(const Cell & in) const {
+CellBox CellBoard::getCellArea(const Cell & in) const {
     if (in.getX() < width && in.getY() < height) { // Base case with the cell being in the board and not on and edge.
         return {height, width,
                 height, width};
