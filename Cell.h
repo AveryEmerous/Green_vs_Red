@@ -22,6 +22,8 @@ public:
     int getY() const;
     char getShape() const;
 
+    virtual ~Cell();
+
 private:
     size_t  x, y;
     char    shape;
@@ -60,11 +62,14 @@ public:
     size_t  getGens() const;
     char    getCellShape(size_t y, size_t x) const;
     CellBox getCellArea(const Cell & in) const;
+    std::pair<int,int> getSize() const;
+
+    void addCell(std::unique_ptr<Cell> in);
+
 
     template<class T>
     void fillEmpty() {
         static_assert(std::is_base_of<Cell, T>::value, "Type must be derived from Cell");
-
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
                 if (!board[y][x]) {
@@ -73,10 +78,6 @@ public:
             }
         }
     }
-
-    void addCell(std::unique_ptr<Cell> in);
-
-    std::pair<int,int> getSize();
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> board;

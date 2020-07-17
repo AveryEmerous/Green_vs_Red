@@ -19,6 +19,10 @@ char Cell::getShape() const {
     return shape;
 }
 
+Cell::~Cell()
+{
+}
+
 Red_Cell::Red_Cell(size_t x, size_t y)
 : Cell(x, y, RED)
 {
@@ -137,7 +141,7 @@ void CellBoard::addCell(std::unique_ptr<Cell> in) {
         board[in->getY()][in->getX()] = std::move(in);
 }
 
-std::pair<int, int> CellBoard::getSize() {
+std::pair<int, int> CellBoard::getSize() const {
     return {height, width};
 }
 
