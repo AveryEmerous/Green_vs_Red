@@ -3,47 +3,72 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
+// Easier connection with the colors than arbitrary characters.
 enum CELL_CHARS {
     NONE    = '\0',
     RED     = '0',
     GREEN   = '1'
 };
 
+// Defined prototype for the compiler to see that it will be defined later
+// and able to use it in code before it's definition.
 struct CellBoard;
 
+// Base class of all cells. Used to define newer classes with inherited logic
+// behind them and ability to store them together in arrays.
 class Cell {
 public:
-    Cell(size_t x, size_t y, char shape);
+    // Initializes the private variables.
+    Cell(size_t y, size_t x, char shape);
 
+    // Virtual destructor for in the case that a future derived type.
+    virtual ~Cell() = default;
+
+    // Contains logic associated with the type of cell used.
+    // Extracts the cells around it through the given board
+    // and returns to which shape/color it should turn into.
     virtual char nextGen(CellBoard & in) = 0;
 
     int getX() const;
     int getY() const;
     char getShape() const;
 
-    virtual ~Cell();
-
 private:
     size_t  x, y;
     char    shape;
 };
 
+// Derived class from Cell.
+// Exhibits the rules:
+//  1)  Change to green cell whenever there are 3 or 6 green cells
+//      surrounding the current cell.
+//  2)  Will not change cell shape/color whenever there are any other
+//      amount of cells surrounding the current cell.
 class Red_Cell : public Cell {
 public:
-    Red_Cell(size_t x, size_t y);
+    Red_Cell(size_t y, size_t x);
 
     char nextGen(CellBoard & in) override;
 
 };
 
+// Derived class from Cell.
+// Exhibits the rules:
+//  1)  Stay green whenever there are 2, 3 or 6 red cells surrounding
+//      the current cell.
+//  2)  Will change cell "color" whenever there are any other amount
+//      of cells surrounding the current cell.
 class Green_Cell : public Cell {
 public:
-    Green_Cell(size_t x, size_t y);
+    Green_Cell(size_t y, size_t x);
 
     char nextGen(CellBoard & in) override;
+
 };
 
+// Contains the boundaries of where a cell should check it's surroundings.
 struct CellBox {
     CellBox(size_t upperY, size_t upperX, size_t lowerY, size_t lowerX);
     std::pair<size_t, size_t> upper;
@@ -51,30 +76,43 @@ struct CellBox {
     
 };
 
+// Contains all of the cells and the methods by which they can communicate.
 class CellBoard {
 public:
-    CellBoard(size_t sizeX, size_t sizeY);
+    // Initializes the 2D vector to the appropriate size.
+    CellBoard(size_t width, size_t height);
 
+    // Prints the whole board to the console with tabulations.
     void print();
+
+    // Clears out all of the cells and replaces them with empty ones (nullptr).
     void clear();
+
+    // Initializes a single generation.
     void update();
 
+    // Returns the number of generations the board has gone through.
     size_t  getGens() const;
-    char    getCellShape(size_t y, size_t x) const;
-    CellBox getCellArea(const Cell & in) const;
-    std::pair<int,int> getSize() const;
 
+    // Returns the shape/color of the cell in coordinates.
+    char    getCellShape(size_t y, size_t x) const;
+
+    // Returns the boundaries of the searched area for a cell.
+    CellBox getCellArea(const Cell & in) const;
+
+    // Returns the size of the board with format (WIDTH, HEIGHT).
+    std::pair<int, int> getSize() const;
+
+    // Adds a cell to the stored coordinates if the space is empty (nullptr).
     void addCell(std::unique_ptr<Cell> in);
 
-
+    // Fills all of the remaining unused spots with a Cell derivative.
     template<class T>
-    void fillEmpty() {
+    void fillEmptyWith() {
         static_assert(std::is_base_of<Cell, T>::value, "Type must be derived from Cell");
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
-                if (!board[y][x]) {
-                    board[y][x] = std::make_unique<T>(y, x);
-                }
+                addCell(std::make_unique<T>(y,x));
             }
         }
     }
@@ -84,6 +122,14 @@ private:
     size_t height;
     size_t width;
     size_t nGen;
+
+    // Changes the cell to the given type on the given coordinates.
+    template<class T>
+    void changeCellTo(size_t y, size_t x) {
+        board[y][x].reset();
+        addCell(std::make_unique<T>(y, x));
+    }
+
 };
 
 #endif //GREEN_VS_RED_CELL_H
