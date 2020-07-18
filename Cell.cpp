@@ -1,8 +1,9 @@
 #include "Cell.h"
 #include <stdexcept>
+#include <iostream>
 
-Cell::Cell(size_t x, size_t y, char shape)
-: x(x), y(y), shape(shape)
+Cell::Cell(size_t y, size_t x, char shape)
+: y(y), x(x), shape(shape)
 {
 }
 
@@ -18,40 +19,42 @@ char Cell::getShape() const {
     return shape;
 }
 
-Red_Cell::Red_Cell(size_t x, size_t y)
-: Cell(x, y, RED)
+Red_Cell::Red_Cell(size_t y, size_t x)
+: Cell(y, x, RED)
 {
 }
 
-char Red_Cell::nextGen(CellBoard &in) {
+std::unique_ptr<Cell> Red_Cell::nextGen(CellBoard &in) {
     CellBox currBox = in.getCellArea(*this);
     unsigned greenCnt = 0;
-    for (unsigned i = currBox.upper.first; i < currBox.lower.first; i++) {
-        for (unsigned j = currBox.upper.second; j < currBox.lower.second; j++) {
-            if (i == getX() && j == getY())
-                continue;
-            if (in.getCellShape(i,j) == GREEN) {
+    for (unsigned y = currBox.upper.first; y < currBox.lower.first; y++) {
+        for (unsigned x = currBox.upper.second; x < currBox.lower.second; x++) {
+            if (in.getCellShape(y, x) == GREEN) {
                 greenCnt++;
             }
         }
     }
 
-    return !(greenCnt % 3) ? GREEN : NONE;
+    switch (greenCnt) {
+        case 3: case 6:
+            return nullptr;
+        default:
+            return std::make_unique<Green_Cell>(getY(), getX());
+    }
+
 }
 
-Green_Cell::Green_Cell(size_t x, size_t y)
-: Cell(x, y, GREEN)
+Green_Cell::Green_Cell(size_t y, size_t x)
+: Cell(y, x, GREEN)
 {
 }
 
-char Green_Cell::nextGen(CellBoard &in) {
+std::unique_ptr<Cell> Green_Cell::nextGen(CellBoard &in) {
     CellBox currBox = in.getCellArea(*this);
     unsigned redCnt = 0;
-    for (unsigned i = currBox.upper.first; i < currBox.lower.first; i++) {
-        for (unsigned j = currBox.upper.second; j < currBox.lower.second; j++) {
-            if (i == getX() && j == getY())
-                continue;
-            if (in.getCellShape(i,j) == GREEN) {
+    for (unsigned y = currBox.upper.first; y < currBox.lower.first; y++) {
+        for (unsigned x = currBox.upper.second; x < currBox.lower.second; x++) {
+            if (in.getCellShape(y, x) == GREEN) {
                 redCnt++;
             }
         }
@@ -59,9 +62,9 @@ char Green_Cell::nextGen(CellBoard &in) {
 
     switch (redCnt) {
         case 2: case 3: case 6:
-            return NONE;
+            return nullptr;
 
         default:
-            return RED;
+            return std::make_unique<Red_Cell>(getY(), getX());
     }
 }

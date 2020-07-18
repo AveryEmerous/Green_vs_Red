@@ -21,17 +21,17 @@ int main() {
     CellBoard board (3,3);
 
     //board.addCell(std::make_unique<Red_Cell>(0,0));
-    board.addCell(std::make_unique<Green_Cell>(0,1));
+    board.addCell(std::make_unique<Green_Cell>(1,0));
     board.addCell(std::make_unique<Green_Cell>(1,1));
-    board.addCell(std::make_unique<Green_Cell>(2,1));
+    board.addCell(std::make_unique<Green_Cell>(1,2));
 
     board.fillEmpty<Red_Cell>();
 
     unsigned cnt = 0;
 
     for (unsigned i = 0; i < 10; i++) {
-        if (board.getCellShape(1,0) == GREEN) {
-            cnt++;
+        if (board.getCellShape(0,1) == GREEN) {
+            std::cout << '\n' << cnt++ << '\n';
         }
 
         board.print();

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <memory>
-#include <optional>
 
 // Easier connection with the colors than arbitrary characters.
 enum CELL_CHARS {
@@ -23,13 +22,13 @@ public:
     // Initializes the private variables.
     Cell(size_t y, size_t x, char shape);
 
-    // Virtual destructor for in the case that a future derived type.
+    // Virtual destructor for in the case that a future derived type needs a destructor.
     virtual ~Cell() = default;
 
     // Contains logic associated with the type of cell used.
     // Extracts the cells around it through the given board
     // and returns to which shape/color it should turn into.
-    virtual char nextGen(CellBoard & in) = 0;
+    virtual std::unique_ptr<Cell> nextGen(CellBoard & in) = 0;
 
     int getX() const;
     int getY() const;
@@ -50,7 +49,7 @@ class Red_Cell : public Cell {
 public:
     Red_Cell(size_t y, size_t x);
 
-    char nextGen(CellBoard & in) override;
+    std::unique_ptr<Cell> nextGen(CellBoard & in) override;
 
 };
 
@@ -64,8 +63,7 @@ class Green_Cell : public Cell {
 public:
     Green_Cell(size_t y, size_t x);
 
-    char nextGen(CellBoard & in) override;
-
+    std::unique_ptr<Cell> nextGen(CellBoard & in) override;
 };
 
 // Contains the boundaries of where a cell should check it's surroundings.
@@ -80,7 +78,7 @@ struct CellBox {
 class CellBoard {
 public:
     // Initializes the 2D vector to the appropriate size.
-    CellBoard(size_t width, size_t height);
+    CellBoard(size_t sizeX, size_t sizeY);
 
     // Prints the whole board to the console with tabulations.
     void print();
@@ -92,27 +90,32 @@ public:
     void update();
 
     // Returns the number of generations the board has gone through.
-    size_t  getGens() const;
+    size_t getGens() const;
 
     // Returns the shape/color of the cell in coordinates.
-    char    getCellShape(size_t y, size_t x) const;
+    char getCellShape(size_t y, size_t x) const;
 
     // Returns the boundaries of the searched area for a cell.
     CellBox getCellArea(const Cell & in) const;
 
     // Returns the size of the board with format (WIDTH, HEIGHT).
-    std::pair<int, int> getSize() const;
+    std::pair<int,int> getSize() const;
 
     // Adds a cell to the stored coordinates if the space is empty (nullptr).
     void addCell(std::unique_ptr<Cell> in);
 
+    // Overwrites the cell that is in the given coordinates.
+    void changeCell(std::unique_ptr<Cell> in);
+
     // Fills all of the remaining unused spots with a Cell derivative.
     template<class T>
-    void fillEmptyWith() {
+    void fillEmpty() {
         static_assert(std::is_base_of<Cell, T>::value, "Type must be derived from Cell");
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
-                addCell(std::make_unique<T>(y,x));
+                if (!board[y][x]) {
+                    board[y][x] = std::make_unique<T>(y, x);
+                }
             }
         }
     }
@@ -122,14 +125,6 @@ private:
     size_t height;
     size_t width;
     size_t nGen;
-
-    // Changes the cell to the given type on the given coordinates.
-    template<class T>
-    void changeCellTo(size_t y, size_t x) {
-        board[y][x].reset();
-        addCell(std::make_unique<T>(y, x));
-    }
-
 };
 
 #endif //GREEN_VS_RED_CELL_H
