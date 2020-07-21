@@ -1,6 +1,9 @@
 #ifndef GREEN_VS_RED_CELL_H
 #define GREEN_VS_RED_CELL_H
 
+#define MAX_SIZE_Y 1000
+#define MAX_SIZE_X 1000
+
 #include <vector>
 #include <memory>
 
@@ -28,7 +31,7 @@ public:
     // Contains logic associated with the type of cell used.
     // Extracts the cells around it through the given board
     // and returns to which shape/color it should turn into.
-    virtual std::unique_ptr<Cell> nextGen(CellBoard & in) = 0;
+    virtual std::unique_ptr<Cell> nextGen(CellBoard & board) = 0;
 
     int getX() const;
     int getY() const;
@@ -49,7 +52,7 @@ class Red_Cell : public Cell {
 public:
     Red_Cell(size_t y, size_t x);
 
-    std::unique_ptr<Cell> nextGen(CellBoard & in) override;
+    std::unique_ptr<Cell> nextGen(CellBoard & board) override;
 
 };
 
@@ -63,7 +66,7 @@ class Green_Cell : public Cell {
 public:
     Green_Cell(size_t y, size_t x);
 
-    std::unique_ptr<Cell> nextGen(CellBoard & in) override;
+    std::unique_ptr<Cell> nextGen(CellBoard & board) override;
 };
 
 // Contains the boundaries of where a cell should check it's surroundings.
@@ -75,10 +78,11 @@ struct CellBox {
 };
 
 // Contains all of the cells and the methods by which they can communicate.
+// MAX_SIZE: 999x999
 class CellBoard {
 public:
     // Initializes the 2D vector to the appropriate size.
-    CellBoard(size_t sizeX, size_t sizeY);
+    CellBoard(size_t height, size_t width);
 
     // Prints the whole board to the console with tabulations.
     void print();
@@ -109,7 +113,7 @@ public:
 
     // Fills all of the remaining unused spots with a Cell derivative.
     template<class T>
-    void fillEmpty() {
+    void fillEmptyWith() {
         static_assert(std::is_base_of<Cell, T>::value, "Type must be derived from Cell");
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
@@ -119,6 +123,9 @@ public:
             }
         }
     }
+
+    // Fills the board cells with the inputted characters and their relative class.
+    void fillFromConsole();
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> board;
