@@ -70,31 +70,15 @@ std::pair<int, int> CellBoard::getSize() const {
 }
 
 CellBox CellBoard::getCellArea(const Cell & in) const {
-    if (in.getY() >= height || in.getX() >= width)
+    if (in.getX() > width || in.getX() < 0 || in.getY() >= height || in.getY() < 0)
         throw std::out_of_range("Out of bounds.");
-    if ((in.getY() > 0 && in.getY() < height - 1) && (in.getX() > 0 && in.getX() < width - 1))
-        // Within borders and on none of the edges/corners.
-        return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX() + 1);
-    if (in.getY() == height - 1) { // Bottom border.
-        if (in.getX() == width - 1) // Bottom-right corner.
-            return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX());
-        if (in.getX() == 0) // Bottom-left corner.
-            return CellBox(in.getY() - 1, in.getX(), in.getY(), in.getX() + 1);
-        return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX() + 1);
-    }
-    if (in.getY() == 0) { // Top border.
-        if (in.getX() == width - 1) // Top-right corner.
-            return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX());
-        if (in.getX() == 0) // Top-left corner.
-            return CellBox(in.getY(), in.getX(), in.getY() + 1, in.getX() + 1);
-        return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX() + 1);
-    }
-    if (in.getX() == width - 1) // Right border.
-        return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX());
-    if (in.getX() == 0) // Left border.
-        return CellBox(in.getY() - 1, in.getX(), in.getY() + 1, in.getX() + 1);
 
-    throw std::out_of_range("Unknown bounds.");
+    size_t lowx = (in.getX() - 1 > 0) ? in.getX() - 1 : 0;
+    size_t lowy = (in.getY() - 1 > 0) ? in.getY() - 1 : 0;
+    size_t highx = (in.getX() + 1 < width - 1) ? in.getX() + 1 : width - 1;
+    size_t highy = (in.getY() + 1 < height - 1) ? in.getY() + 1 : height - 1;
+
+    return {lowy,lowx,highy,highx};
 }
 
 char CellBoard::getCellShapeAt(size_t y, size_t x) const {
