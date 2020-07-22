@@ -19,16 +19,7 @@ CellBoard::CellBoard(size_t height, size_t width)
 }
 
 void CellBoard::print() {
-    for (size_t y = 0; y < height; y++) {
-        for (size_t x = 0; x < width; x++) {
-            if (!board[y][x]) { // Representing empty cells.
-                std::cout << ".\t";
-                continue;
-            }
-            std::cout << board[y][x]->getShape() << '\t';
-        }
-        std::cout << '\n';
-    }
+    std::cout << *this;
 }
 
 void CellBoard::clear() {
@@ -52,7 +43,7 @@ void CellBoard::update() {
     std::unique_ptr<Cell> newCell = nullptr;
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            if (board[y][x] && (newCell = std::move(board[y][x]->moveFutureCell()))) {
+            if (board[y][x] && (newCell = std::move(board[y][x]->getFutureCell()))) {
                 changeCell(std::move(newCell));
             }
         }
@@ -79,29 +70,31 @@ std::pair<int, int> CellBoard::getSize() const {
 }
 
 CellBox CellBoard::getCellArea(const Cell & in) const {
-    if (in.getY() >= height || in.getX() >= width) {
+    if (in.getY() >= height || in.getX() >= width)
         throw std::out_of_range("Out of bounds.");
-    } else if ((in.getY() > 0 && in.getY() < height - 1) && (in.getX() > 0 && in.getX() < width - 1)) {
+    if ((in.getY() > 0 && in.getY() < height - 1) && (in.getX() > 0 && in.getX() < width - 1))
         // Within borders and on none of the edges/corners.
         return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX() + 1);
-    } else if (in.getY() == height - 1 && in.getX() == width - 1) { // Bottom-right corner.
-        return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX());
-    } else if (in.getY() == 0 && in.getX() == width - 1) { // Top-right corner.
-        return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX());
-    } else if (in.getY() == height - 1 && in.getX() == 0) { // Bottom-left corner.
-        return CellBox(in.getY() - 1, in.getX(), in.getY(), in.getX() + 1);
-    } else if (in.getY() == 0 && in.getX() == 0) { // Top-left corner.
-        return CellBox(in.getY(), in.getX(), in.getY() + 1, in.getX() + 1);
-    } else if (in.getX() == width - 1) { // Right border.
-        return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX());
-    } else if (in.getY() == height - 1) { // Bottom border.
+    if (in.getY() == height - 1) { // Bottom border.
+        if (in.getX() == width - 1) // Bottom-right corner.
+            return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX());
+        if (in.getX() == 0) // Bottom-left corner.
+            return CellBox(in.getY() - 1, in.getX(), in.getY(), in.getX() + 1);
         return CellBox(in.getY() - 1, in.getX() - 1, in.getY(), in.getX() + 1);
-    } else if (in.getX() == 0) { // Left border.
-        return CellBox(in.getY() - 1, in.getX(), in.getY() + 1, in.getX() + 1);
-    } else if (in.getY() == 0) { // Top border.
+    }
+    if (in.getY() == 0) { // Top border.
+        if (in.getX() == width - 1) // Top-right corner.
+            return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX());
+        if (in.getX() == 0) // Top-left corner.
+            return CellBox(in.getY(), in.getX(), in.getY() + 1, in.getX() + 1);
         return CellBox(in.getY(), in.getX() - 1, in.getY() + 1, in.getX() + 1);
-    } else
-        throw std::out_of_range("Unknown bounds.");
+    }
+    if (in.getX() == width - 1) // Right border.
+        return CellBox(in.getY() - 1, in.getX() - 1, in.getY() + 1, in.getX());
+    if (in.getX() == 0) // Left border.
+        return CellBox(in.getY() - 1, in.getX(), in.getY() + 1, in.getX() + 1);
+
+    throw std::out_of_range("Unknown bounds.");
 }
 
 char CellBoard::getCellShapeAt(size_t y, size_t x) const {
@@ -117,6 +110,22 @@ CellBox::CellBox(size_t upperY, size_t upperX, size_t lowerY, size_t lowerX)
 }
 
 void CellBoard::fillFromConsole() {
+    std::cin >> *this;
+}
+
+std::ostream &CellBoard::ext(std::ostream &os) const {
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            if (board[y][x]) {
+                os << board[y][x]->getShape() << '\t';
+            }
+        }
+        os << '\n';
+    }
+    return os;
+}
+
+std::istream &CellBoard::ins(std::istream &is) {
     std::string buffer;
     for (size_t y = 0, x; y < height; y++) {
         x = 0;
@@ -141,4 +150,9 @@ void CellBoard::fillFromConsole() {
         if (x < width)
             throw std::underflow_error("Not enough cells inputted.");
     }
+
+    return is;
 }
+
+std::ostream & operator<< (std::ostream & os, const CellBoard & obj) {return obj.ext(os);}
+std::istream & operator>> (std::istream & is, CellBoard & obj) {return obj.ins(is);}

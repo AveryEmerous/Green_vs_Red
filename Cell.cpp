@@ -1,13 +1,12 @@
 #include "Cell.h"
 #include <stdexcept>
-#include <iostream>
 
 Cell::Cell(size_t y, size_t x, char shape)
-: y(y), x(x), shape(shape), futureCell(nullptr)
+: y(y % MAX_SIZE_Y), x(x % MAX_SIZE_X), shape(shape), futureCell(nullptr)
 {
 }
 
-std::unique_ptr<Cell> Cell::moveFutureCell() {
+std::unique_ptr<Cell> Cell::getFutureCell() {
     return std::move(futureCell);
 }
 

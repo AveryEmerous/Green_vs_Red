@@ -6,10 +6,11 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 
 // Easier connection with the colors than arbitrary characters.
 enum CELL_CHARS {
-    NONE    = '\0',
+    NONE    = '.',
     RED     = '0',
     GREEN   = '1'
 };
@@ -33,8 +34,11 @@ public:
     // and returns to which shape/color it should turn into.
     virtual void nextGen(CellBoard & board) = 0;
 
-    std::unique_ptr<Cell> moveFutureCell();
+    // Moves the contents of the private future cell.
+    // Nullptr if it the current cell doesn't change it's type.
+    std::unique_ptr<Cell> getFutureCell();
 
+    // Getters:
     int getX() const;
     int getY() const;
     char getShape() const;
@@ -132,7 +136,12 @@ public:
     }
 
     // Fills the board cells with the inputted characters and their relative class.
+    // Only accept default cell types. Change function declaration to accept more types.
     void fillFromConsole();
+
+    // iostream operator handlers:
+    std::ostream & ext (std::ostream & os) const;
+    std::istream & ins (std::istream & is);
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> board;
@@ -141,5 +150,9 @@ private:
     size_t nGen;
 
 };
+
+// Redefinitions:
+std::ostream & operator<< (std::ostream & os, const CellBoard & obj);
+std::istream & operator>> (std::istream & is, CellBoard & obj);
 
 #endif //GREEN_VS_RED_CELL_H

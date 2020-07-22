@@ -18,13 +18,13 @@ int main() {
 
     B[2][2] = std::make_unique<Red_Cell>(2,2);*/
 
-    CellBoard board (3,3);
+    CellBoard board (4,4);
 
-    board.addCell(std::make_unique<Green_Cell>(1,0)); //Example 1 (3x3, 10)
+/*    board.addCell(std::make_unique<Green_Cell>(1,0)); //Example 1 (3x3, 10)
     board.addCell(std::make_unique<Green_Cell>(1,1));
     board.addCell(std::make_unique<Green_Cell>(1,2));
 
-    board.fillEmptyWith<Red_Cell>();
+    board.fillEmptyWith<Red_Cell>();*/
 
 /*    board.addCell(std::make_unique<Red_Cell>(0,1)); // example 2 (4x4, 15)
     board.addCell(std::make_unique<Red_Cell>(0,2));
@@ -40,17 +40,19 @@ int main() {
 
 /*    board.fillFromConsole();*/
 
-    for (unsigned i = 0; i < 10; i++) {
+    std::cin >> board;
+
+    for (unsigned i = 0; i < 15; i++) {
 /*        if (board.getCellShapeAt(2,2) == GREEN) {
             *//*std::cout << '\n' << *//*cnt++*//* << '\n'*//*;
         }*/
 
         std::cout << '\n';
-        board.print();
+        std::cout << board;
         std::cout << '\n' << "Generation: " << i+1 << '\n';
         board.update();
 
-        if (board.getCellShapeAt(0, 1) == GREEN) {
+        if (board.getCellShapeAt(2, 2) == GREEN) {
             /*std::cout << '\n' << */cnt++/* << '\n'*/;
         }
 
