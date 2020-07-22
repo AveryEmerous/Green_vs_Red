@@ -40,8 +40,10 @@ int main() {
             std::cout << "Enter grid size (x,y):\n";
 
             tmp = getnums(2);
+            x = tmp[0];
+            y = tmp[1];
 
-            CellBoard board(tmp[0], tmp[1]);
+            CellBoard board(x, y);
 
             std::cin >> board;
 
