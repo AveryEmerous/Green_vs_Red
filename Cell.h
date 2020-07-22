@@ -31,15 +31,21 @@ public:
     // Contains logic associated with the type of cell used.
     // Extracts the cells around it through the given board
     // and returns to which shape/color it should turn into.
-    virtual std::unique_ptr<Cell> nextGen(CellBoard & board) = 0;
+    virtual void nextGen(CellBoard & board) = 0;
+
+    std::unique_ptr<Cell> moveFutureCell();
 
     int getX() const;
     int getY() const;
     char getShape() const;
 
+protected:
+    std::unique_ptr<Cell> futureCell;
+
 private:
     size_t  x, y;
     char    shape;
+
 };
 
 // Derived class from Cell.
@@ -52,13 +58,13 @@ class Red_Cell : public Cell {
 public:
     Red_Cell(size_t y, size_t x);
 
-    std::unique_ptr<Cell> nextGen(CellBoard & board) override;
+    void nextGen(CellBoard & board) override;
 
 };
 
 // Derived class from Cell.
 // Exhibits the rules:
-//  1)  Stay green whenever there are 2, 3 or 6 red cells surrounding
+//  1)  Stay green whenever there are 2, 3 or 6 green cells surrounding
 //      the current cell.
 //  2)  Will change cell "color" whenever there are any other amount
 //      of cells surrounding the current cell.
@@ -66,7 +72,8 @@ class Green_Cell : public Cell {
 public:
     Green_Cell(size_t y, size_t x);
 
-    std::unique_ptr<Cell> nextGen(CellBoard & board) override;
+    void nextGen(CellBoard & board) override;
+
 };
 
 // Contains the boundaries of where a cell should check it's surroundings.
@@ -97,7 +104,7 @@ public:
     size_t getGens() const;
 
     // Returns the shape/color of the cell in coordinates.
-    char getCellShape(size_t y, size_t x) const;
+    char getCellShapeAt(size_t y, size_t x) const;
 
     // Returns the boundaries of the searched area for a cell.
     CellBox getCellArea(const Cell & in) const;
@@ -132,6 +139,7 @@ private:
     size_t height;
     size_t width;
     size_t nGen;
+
 };
 
 #endif //GREEN_VS_RED_CELL_H

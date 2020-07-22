@@ -3,8 +3,12 @@
 #include <iostream>
 
 Cell::Cell(size_t y, size_t x, char shape)
-: y(y), x(x), shape(shape)
+: y(y), x(x), shape(shape), futureCell(nullptr)
 {
+}
+
+std::unique_ptr<Cell> Cell::moveFutureCell() {
+    return std::move(futureCell);
 }
 
 int Cell::getX() const {
@@ -24,12 +28,12 @@ Red_Cell::Red_Cell(size_t y, size_t x)
 {
 }
 
-std::unique_ptr<Cell> Red_Cell::nextGen(CellBoard &board) {
+void Red_Cell::nextGen(CellBoard &board) {
     CellBox currBox = board.getCellArea(*this);
     size_t greenCnt = 0;
     for (unsigned y = currBox.upper.first; y <= currBox.lower.first; y++) {
         for (unsigned x = currBox.upper.second; x <= currBox.lower.second; x++) {
-            if (board.getCellShape(y, x) == GREEN) {
+            if (board.getCellShapeAt(y, x) == GREEN) {
                 greenCnt++;
             }
         }
@@ -37,9 +41,9 @@ std::unique_ptr<Cell> Red_Cell::nextGen(CellBoard &board) {
 
     switch (greenCnt) {
         case 3: case 6:
-            return std::make_unique<Green_Cell>(getY(), getX());
+            futureCell = std::make_unique<Green_Cell>(getY(),getX());
         default:
-            return nullptr;
+            return;
     }
 }
 
@@ -48,12 +52,12 @@ Green_Cell::Green_Cell(size_t y, size_t x)
 {
 }
 
-std::unique_ptr<Cell> Green_Cell::nextGen(CellBoard &board) {
+void Green_Cell::nextGen(CellBoard &board) {
     CellBox currBox = board.getCellArea(*this);
     size_t greenCnt = 0;
     for (unsigned y = currBox.upper.first; y <= currBox.lower.first; y++) {
         for (unsigned x = currBox.upper.second; x <= currBox.lower.second; x++) {
-            if (board.getCellShape(y, x) == GREEN) {
+            if (board.getCellShapeAt(y, x) == GREEN) {
                 greenCnt++;
             }
         }
@@ -63,8 +67,8 @@ std::unique_ptr<Cell> Green_Cell::nextGen(CellBoard &board) {
 
     switch (greenCnt) {
         case 2: case 3: case 6:
-            return nullptr;
+            return;
         default:
-            return std::make_unique<Red_Cell>(getY(), getX());
+            futureCell = std::make_unique<Red_Cell>(getY(), getX());
     }
 }

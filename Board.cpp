@@ -41,10 +41,18 @@ void CellBoard::clear() {
 
 void CellBoard::update() {
     nGen++;
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            if (board[y][x]) {
+                board[y][x]->nextGen(*this);
+            }
+        }
+    }
+
     std::unique_ptr<Cell> newCell = nullptr;
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            if (board[y][x] && (newCell = board[y][x]->nextGen(*this))) {
+            if (board[y][x] && (newCell = std::move(board[y][x]->moveFutureCell()))) {
                 changeCell(std::move(newCell));
             }
         }
@@ -96,7 +104,7 @@ CellBox CellBoard::getCellArea(const Cell & in) const {
         throw std::out_of_range("Unknown bounds.");
 }
 
-char CellBoard::getCellShape(size_t y, size_t x) const {
+char CellBoard::getCellShapeAt(size_t y, size_t x) const {
     if ((y < height && x < width) && board[y][x])
         return board[y][x]->getShape();
     else return NONE;
@@ -110,8 +118,8 @@ CellBox::CellBox(size_t upperY, size_t upperX, size_t lowerY, size_t lowerX)
 
 void CellBoard::fillFromConsole() {
     std::string buffer;
-    for (size_t y = 0; y < height; y++) {
-        size_t x = 0;
+    for (size_t y = 0, x; y < height; y++) {
+        x = 0;
         std::getline(std::cin, buffer);
         for (char c: buffer) {
             switch (c) {
@@ -129,7 +137,6 @@ void CellBoard::fillFromConsole() {
                 default:
                     throw std::invalid_argument("Unknown cell shape/color.");
             }
-            if (x >= width) break;
         }
         if (x < width)
             throw std::underflow_error("Not enough cells inputted.");
