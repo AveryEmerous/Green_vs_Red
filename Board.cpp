@@ -73,7 +73,7 @@ std::pair<int, int> CellBoard::getSize() const {
 }
 
 CellBox CellBoard::getCellArea(const Cell & in) const {
-    if (in.getX() > width || in.getX() < 0 || in.getY() >= height || in.getY() < 0)
+    if (in.getX() >= width || in.getX() < 0 || in.getY() >= height || in.getY() < 0)
         throw std::out_of_range("Out of bounds.");
 
     size_t lowx = (in.getX() - 1 > 0) ? in.getX() - 1 : 0;
