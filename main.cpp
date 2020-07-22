@@ -37,7 +37,7 @@ int main() {
             size_t y, x, cntGens, greenCnt = 0;
             std::vector<size_t> tmp;
 
-            std::cout << "Enter grid size:\n";
+            std::cout << "Enter grid size (x,y):\n";
 
             tmp = getnums(2);
 
