@@ -1,71 +1,70 @@
 #include <iostream>
 #include <memory>
+#include <algorithm>
 #include "Cell.h"
+
+// Extracts all of the numbers in the stream and allocates the
+// given amount of space for different numbers. Different numbers
+// need to be separated in the stream by some kind of non-digit character.
+std::vector<size_t> getnums(size_t n_nums) {
+    std::vector<size_t> out;
+    std::string buffer, tmp;
+    getline(std::cin, buffer);
+
+    for (size_t i = 0, j = 0; i <= buffer.length(); i++) { // j - copy from, i - copy to
+        if (!isdigit(buffer[i])) {
+            tmp = buffer.substr(j, i);
+            out.push_back(atoi(tmp.c_str()));
+            if (out.size() >= n_nums)
+                break;
+
+            while (!isdigit(buffer[i])) { // Skips all of the non-digit characters.
+                i++;
+            }
+            j = i;
+        }
+    }
+    return out;
+}
 
 int main() {
 
-/*    int w = 5, h = 5;
+    while (true) {
+        try {
+            size_t y, x, cntGens, greenCnt = 0;
+            std::vector<size_t> tmp;
 
-    std::vector<std::vector<std::unique_ptr<Cell>>> B;
+            std::cout << "Enter grid size:\n";
 
-    for (unsigned i = 0; i < w; i++) {
-        std::vector<std::unique_ptr<Cell>> col;
-        for (unsigned j = 0; j < h; j++) {
-            col.push_back(std::unique_ptr<Cell>(nullptr));
+            tmp = getnums(2);
+
+            CellBoard board(tmp[0], tmp[1]);
+
+            std::cin >> board;
+
+            tmp.clear();
+            tmp = getnums(3);
+            x = tmp[0];
+            y = tmp[1];
+            cntGens = tmp[2];
+
+            while (board.getGens() < cntGens) {
+                board.update();
+                if (board.getCellShapeAt(y, x) == GREEN)
+                    greenCnt++;
+            }
+
+            std::cout << "Green occurrences at [" << x << ", " << y << "] is: " << greenCnt << '\n';
+
+            return 0;
+
+        } catch (std::out_of_range & e) {
+            std::cerr << "An error occurred: " << e.what() << '\n'
+                << "A cell is out of the bounds of the board.\n";
+        } catch (std::exception &e) {
+            std::cerr << "An error occurred: " << e.what() << '\n';
         }
-        B.push_back(std::move(col));
     }
-
-    B[2][2] = std::make_unique<Red_Cell>(2,2);*/
-
-    CellBoard board (4,4);
-
-/*    board.addCell(std::make_unique<Green_Cell>(1,0)); //Example 1 (3x3, 10)
-    board.addCell(std::make_unique<Green_Cell>(1,1));
-    board.addCell(std::make_unique<Green_Cell>(1,2));
-
-    board.fillEmptyWith<Red_Cell>();*/
-
-/*    board.addCell(std::make_unique<Red_Cell>(0,1)); // example 2 (4x4, 15)
-    board.addCell(std::make_unique<Red_Cell>(0,2));
-    board.addCell(std::make_unique<Red_Cell>(2,0));
-    board.addCell(std::make_unique<Red_Cell>(2,2));
-    board.addCell(std::make_unique<Red_Cell>(2,3));
-    board.addCell(std::make_unique<Red_Cell>(3,1));
-    board.addCell(std::make_unique<Red_Cell>(3,3));
-
-    board.fillEmptyWith<Green_Cell>();*/
-
-    unsigned cnt = 0;
-
-/*    board.fillFromConsole();*/
-
-    std::cin >> board;
-
-    for (unsigned i = 0; i < 15; i++) {
-/*        if (board.getCellShapeAt(2,2) == GREEN) {
-            *//*std::cout << '\n' << *//*cnt++*//* << '\n'*//*;
-        }*/
-
-        std::cout << '\n';
-        std::cout << board;
-        std::cout << '\n' << "Generation: " << i+1 << '\n';
-        board.update();
-
-        if (board.getCellShapeAt(2, 2) == GREEN) {
-            /*std::cout << '\n' << */cnt++/* << '\n'*/;
-        }
-
-/*        {
-            std::cout << '\n' << "Press Enter to continue to next generation...";
-            while (std::cin.get() != '\n');
-        }*/
-
-    }
-
-    std::cout << "Times green: " << cnt << '\n';
-
-    std::string name;
 
     return 0;
 }

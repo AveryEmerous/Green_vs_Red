@@ -3,15 +3,15 @@
 #include <stdexcept>
 #include <string>
 
-CellBoard::CellBoard(size_t height, size_t width)
-: height(height % MAX_SIZE_Y), width(width % MAX_SIZE_X), nGen(0)
+CellBoard::CellBoard(size_t width, size_t height)
+: width(width % MAX_SIZE_Y), height(height % MAX_SIZE_X), nGen(0)
 {
     if (0 == this->height || 0 == this->width)
-        throw std::invalid_argument("Unable to construct board with a size of zero.");
+        throw std::invalid_argument("Invalid size to construct board.");
 
-    for (unsigned i = 0; i < width; i++) { // Allocating columns while abiding by ownership.
+    for (unsigned i = 0; i < height; i++) { // Allocating columns while abiding by ownership.
         std::vector<std::unique_ptr<Cell>> col;
-        for (unsigned j = 0; j < height; j++) {
+        for (unsigned j = 0; j < width; j++) {
             col.push_back(std::unique_ptr<Cell>(nullptr));
         }
         board.push_back(std::move(col));

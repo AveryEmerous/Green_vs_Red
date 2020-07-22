@@ -47,8 +47,8 @@ protected:
     std::unique_ptr<Cell> futureCell;
 
 private:
-    size_t  x, y;
-    char    shape;
+    const size_t  x, y;
+    const char    shape;
 
 };
 
@@ -93,7 +93,7 @@ struct CellBox {
 class CellBoard {
 public:
     // Initializes the 2D vector to the appropriate size.
-    CellBoard(size_t height, size_t width);
+    CellBoard(size_t width, size_t height);
 
     // Prints the whole board to the console with tabulations.
     void print();
@@ -145,8 +145,8 @@ public:
 
 private:
     std::vector<std::vector<std::unique_ptr<Cell>>> board;
-    size_t height;
-    size_t width;
+    const size_t height;
+    const size_t width;
     size_t nGen;
 
 };
