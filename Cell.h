@@ -116,7 +116,7 @@ public:
     // Returns the boundaries of the searched area for a cell.
     CellBox getCellArea(const Cell & in) const;
 
-    // Returns the size of the board with format (WIDTH, HEIGHT).
+    // Returns the size of the board with format (HEIGHT, WIDTH).
     std::pair<int,int> getSize() const;
 
     // Adds a cell to the stored coordinates if the space is empty (nullptr).

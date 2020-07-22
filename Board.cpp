@@ -34,7 +34,6 @@ void CellBoard::clear() {
 }
 
 void CellBoard::update() {
-    nGen++;
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             if (board[y][x]) {
@@ -51,6 +50,7 @@ void CellBoard::update() {
             }
         }
     }
+    nGen++;
 }
 
 size_t CellBoard::getGens() const {
