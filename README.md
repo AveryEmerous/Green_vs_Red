@@ -1,7 +1,6 @@
 # Green_vs_Red
 Game of life styled program with a CLI UI with focus on OOP paradigms. Built using g++ 9.3.0 on 64-bit Linux.
 
-# Structure
 The main advantage of this program over other variants of Conway's Game of Life is the ability to add more Cell states and their own logic added to them 
 than the original dead or alive states. 
 
@@ -43,7 +42,26 @@ than the original dead or alive states.
         in the class without the need of elevated privaledges on external functions.
   3. Enum containing all default characters and an associated human readable name. Adding new shapes/colors here is *recommended*.
   4. The program is restricted to maximum size of **999x999** of the board and coordinates of the cells.zz
-  5. The UI is contained in the main file. The UI consists of barebones input where functions from `CellBoard` are used such as `fillfromConsole()` and `update()` to
-  have basic functionality. Main way to gather input from the user is with the previously mentioned functions and a function in main that defines a getline that strips
-  out all of the unneeded characters that are other than numbers. For a number to be identified between others, it has to be spaced with at least *some* other character.
+  5. The UI is contained in the main file. The UI consists of barebones input where functions from `CellBoard` are used such as `fillfromConsole()` and `update()` to have basic functionality. Main way to gather input from the user is with the previously mentioned functions and a function in main that defines a getline that strips out all of t
+he unneeded characters that are other than numbers. For a number to be identified between others, it has to be spaced with at least *some* other character.
+      * Needed input:
+        - The first line asks for two numbers: the width and the height of the board.
+        - Next amount of lines is determined by the inputted height previously. The width of each line has to be at least as much as the inputted width - any more
+        characters will be discarded.
+        - The last line asks for three numbers: the x and y coordinates it should track for how many times green has occured there and the amount of generations
+        that should pass.
+      * Example inputs:
+          First example|Second example
+          -------------|--------------
+          3, 3         |4,4      
+          000          |1001
+          111          |1111
+          000          |0100
+          1, 0, 10     |1010
+          //Result: 5  |2, 2, 15
+          //...........|//Result: 14
+          
+        
+    
+    
     
