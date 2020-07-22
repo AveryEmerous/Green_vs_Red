@@ -1,3 +1,6 @@
+// Made by Daniel Ivanov with g++ version 9.3.0
+// github.com/AveryEmerous
+
 #include "Cell.h"
 #include <stdexcept>
 

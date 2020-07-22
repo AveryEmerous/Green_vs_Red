@@ -1,3 +1,6 @@
+// Made by Daniel Ivanov with g++ version 9.3.0
+// github.com/AveryEmerous
+
 #ifndef GREEN_VS_RED_CELL_H
 #define GREEN_VS_RED_CELL_H
 
