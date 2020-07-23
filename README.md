@@ -40,7 +40,7 @@ than the original dead or alive states.
         need to have a specific case for them in the switch statement.
         - `operator<<` and `operator>>` are acompanied by an extractor(`ext(os)`) and inserter (`ins(is)`). They allow for the native handling of the variables
         in the class without the need of elevated privaledges on external functions.
-  3. Enum containing all default characters and an associated human readable name. Adding new shapes/colors here is *recommended*.
+  3. Enum containing all default characters and an associated human readable name. Adding new shapes/colors here is **recommended**.
   4. The program is restricted to maximum size of **999x999** of the board and coordinates of the cells.zz
   5. The UI is contained in the main file. The UI consists of barebones input where functions from `CellBoard` are used such as `fillfromConsole()` and `update()` to have basic functionality. Main way to gather input from the user is with the previously mentioned functions and a function in main that defines a getline that strips out all of t
 he unneeded characters that are other than numbers. For a number to be identified between others, it has to be spaced with at least *some* other character.
