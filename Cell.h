@@ -96,7 +96,7 @@ struct CellBox {
 class CellBoard {
 public:
     // Initializes the 2D vector to the appropriate size.
-    CellBoard(size_t width, size_t height);
+    CellBoard(size_t height, size_t width);
 
     // Prints the whole board to the console with tabulations.
     void print();
