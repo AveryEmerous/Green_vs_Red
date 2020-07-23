@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-CellBoard::CellBoard(size_t width, size_t height)
-: width(width % MAX_SIZE_Y), height(height % MAX_SIZE_X), nGen(0)
+CellBoard::CellBoard(size_t height, size_t width)
+:height(height % MAX_SIZE_X), width(width % MAX_SIZE_Y), nGen(0)
 {
     if (0 == this->height || 0 == this->width)
         throw std::invalid_argument("Invalid size to construct board.");

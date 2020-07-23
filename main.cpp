@@ -43,7 +43,7 @@ int main() {
             x = tmp[0];
             y = tmp[1];
 
-            CellBoard board(x, y);
+            CellBoard board(y, x);
 
             std::cin >> board;
 
